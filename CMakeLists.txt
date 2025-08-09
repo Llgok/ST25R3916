@@ -8,6 +8,8 @@ idf_component_register(
         "driver" "arduino_cpp_bus_driver" "NFC-RFAL"
     )
 
+target_compile_definitions(${COMPONENT_LIB} PUBLIC "ST25R3916=1")
+
 target_compile_options(
     ${COMPONENT_LIB}
     PRIVATE -Wno-error=unused-const-variable -Wno-error=delete-non-virtual-dtor
