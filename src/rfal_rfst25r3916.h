@@ -2072,8 +2072,6 @@ class RfalRfST25R3916Class : public RfalRfClass {
      */
     ReturnCode st25r3916AatTune(const struct st25r3916AatTuneParams *tuningParams, struct st25r3916AatTuneResult *tuningStatus);
 
-  protected:
-
     void rfalTransceiveTx(void);
     void rfalTransceiveRx(void);
     ReturnCode rfalTransceiveRunBlockingTx(void);
