@@ -79,14 +79,20 @@ void RfalRfST25R3916Class::st25r3916InitInterrupts(void)
 /*******************************************************************************/
 void RfalRfST25R3916Class::st25r3916Isr(void)
 {
-  st25r3916CheckForReceivedInterrupts();
+    if(bus_busy_flag == false)
+    {
+        st25r3916CheckForReceivedInterrupts();
 
-  // Check if callback is set and run it
-  if (NULL != st25r3916interrupt.callback) {
-    st25r3916interrupt.callback();
-  }
+        // Check if callback is set and run it
+        if (NULL != st25r3916interrupt.callback) {
+            st25r3916interrupt.callback();
+        }
+    }
+    else
+    {
+        isr_pending = true;
+    }
 }
-
 
 /*******************************************************************************/
 void RfalRfST25R3916Class::st25r3916CheckForReceivedInterrupts(void)

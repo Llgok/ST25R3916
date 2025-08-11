@@ -90,6 +90,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadRegister(uint8_t reg, uint8_t *val
 ReturnCode RfalRfST25R3916Class::st25r3916ReadMultipleRegisters(uint8_t reg, uint8_t *values, uint8_t length)
 {
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       /* Setting Transaction Parameters */
       dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
@@ -122,6 +123,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadMultipleRegisters(uint8_t reg, uin
         i++;
       }
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -144,6 +146,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteRegister(uint8_t reg, uint8_t val
 ReturnCode RfalRfST25R3916Class::st25r3916WriteMultipleRegisters(uint8_t reg, const uint8_t *values, uint8_t length)
 {
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       uint8_t  tx[256];
 
@@ -178,6 +181,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteMultipleRegisters(uint8_t reg, co
       }
       dev_i2c->endTransmission(true);
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -196,6 +200,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteFifo(const uint8_t *values, uint1
   }
 
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       uint8_t  tx[256];
 
@@ -222,6 +227,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteFifo(const uint8_t *values, uint1
       }
       dev_i2c->endTransmission(true);
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -236,6 +242,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteFifo(const uint8_t *values, uint1
 ReturnCode RfalRfST25R3916Class::st25r3916ReadFifo(uint8_t *buf, uint16_t length)
 {
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       /* Setting Transaction Parameters */
       dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
@@ -259,6 +266,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadFifo(uint8_t *buf, uint16_t length
         i++;
       }
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -277,6 +285,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMem(const uint8_t *values, uint
   }
 
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       uint8_t  tx[256];
 
@@ -303,6 +312,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMem(const uint8_t *values, uint
       }
       dev_i2c->endTransmission(true);
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -323,7 +333,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadPTMem(uint8_t *values, uint16_t le
       return ERR_PARAM;
     }
 
-
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       /* Setting Transaction Parameters */
       dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
@@ -347,6 +357,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadPTMem(uint8_t *values, uint16_t le
         i++;
       }
     }
+    bus_busy_flag = false;
 
     /* Copy PTMem content without prepended byte */
     ST_MEMCPY(values, (tmp + ST25R3916_REG_LEN), length);
@@ -369,6 +380,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemF(const uint8_t *values, uin
   }
 
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       uint8_t  tx[256];
 
@@ -395,6 +407,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemF(const uint8_t *values, uin
       }
       dev_i2c->endTransmission(true);
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -413,6 +426,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemTSN(const uint8_t *values, u
   }
 
   if (length > 0U) {
+    bus_busy_flag = true;
     if (!i2c_enabled) {
       uint8_t  tx[256];
 
@@ -439,6 +453,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemTSN(const uint8_t *values, u
       }
       dev_i2c->endTransmission(true);
     }
+    bus_busy_flag = false;
     if (isr_pending) {
       st25r3916Isr();
       isr_pending = false;
@@ -452,6 +467,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemTSN(const uint8_t *values, u
 /*******************************************************************************/
 ReturnCode RfalRfST25R3916Class::st25r3916ExecuteCommand(uint8_t cmd)
 {
+    bus_busy_flag = true;
   if (!i2c_enabled) {
     /* Setting Transaction Parameters */
     dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
@@ -468,6 +484,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ExecuteCommand(uint8_t cmd)
 
     dev_i2c->endTransmission(true);
   }
+    bus_busy_flag = false;
 
   if (isr_pending) {
     st25r3916Isr();
@@ -481,6 +498,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ExecuteCommand(uint8_t cmd)
 /*******************************************************************************/
 ReturnCode RfalRfST25R3916Class::st25r3916ReadTestRegister(uint8_t reg, uint8_t *val)
 {
+    bus_busy_flag = true;
   if (!i2c_enabled) {
     /* Setting Transaction Parameters */
     dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
@@ -505,6 +523,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadTestRegister(uint8_t reg, uint8_t 
       *val = dev_i2c->read();
     }
   }
+    bus_busy_flag = false;
 
   if (isr_pending) {
     st25r3916Isr();
@@ -518,7 +537,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadTestRegister(uint8_t reg, uint8_t 
 /*******************************************************************************/
 ReturnCode RfalRfST25R3916Class::st25r3916WriteTestRegister(uint8_t reg, uint8_t val)
 {
-
+    bus_busy_flag = true;
   if (!i2c_enabled) {
     uint8_t value = val;               /* MISRA 17.8: use intermediate variable */
     /* Setting Transaction Parameters */
@@ -544,6 +563,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteTestRegister(uint8_t reg, uint8_t
 
     dev_i2c->endTransmission(true);
   }
+  bus_busy_flag = false;
 
   if (isr_pending) {
     st25r3916Isr();

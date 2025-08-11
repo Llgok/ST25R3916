@@ -2121,6 +2121,7 @@ class RfalRfST25R3916Class : public RfalRfClass {
     volatile st25r3916Interrupt st25r3916interrupt; /*!< Instance of ST25R3916 interrupt */
     uint32_t timerStopwatchTick;
     bool i2c_enabled;
+    bool bus_busy_flag = false;
     volatile bool isr_pending;
     ST25R3916IrqHandler irq_handler;
 };
