@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * @file           : st25r3916_default_configuration.h
-  * @brief          : This file contains definitions for ST25R3916 Default Configuration
+  * @file           : st25r3916_custom_configuration.h
+  * @brief          : This file contains definitions for ST25R3916 Custom Configuration
   ******************************************************************************
   * @attention
   *
@@ -16,9 +16,9 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __ST25R3916_DEFAULT_CONFIG_H__
-#define __ST25R3916_DEFAULT_CONFIG_H__
+#ifndef __ST25R3916_CUSTOM_CONFIG_H__
+#define __ST25R3916_CUSTOM_CONFIG_H__
 
-#define ST25R3916B
+#define ST25R3916
 
-#endif /* __ST25R3916_DEFAULT_CONFIG_H__*/
+#endif /* __ST25R3916_CUSTOM_CONFIG_H__*/
