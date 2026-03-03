@@ -1905,6 +1905,10 @@ class RfalRfST25R3916Class : public RfalRfClass {
      */
     void st25r3916CheckForReceivedInterrupts(void);
 
+    static void st25r3916CheckInterruptTask(void* arg);
+
+    void st25r3916CheckInterrupt(void);
+
     /*!
      *****************************************************************************
      *  \brief  Enable a given ST25R3916 Interrupt source
@@ -2110,7 +2114,7 @@ class RfalRfST25R3916Class : public RfalRfClass {
 
     TwoWire *dev_i2c;
     SPIClass *dev_spi;
-    int cs_pin;
+    int cs_pin = -1;
     int int_pin;
     uint32_t spi_speed;
 
@@ -2121,9 +2125,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
     volatile st25r3916Interrupt st25r3916interrupt; /*!< Instance of ST25R3916 interrupt */
     uint32_t timerStopwatchTick;
     bool i2c_enabled;
-    bool bus_busy_flag = false;
-    volatile bool isr_pending;
     ST25R3916IrqHandler irq_handler;
+
+    SemaphoreHandle_t isr_semaphore;
 };
 
 #ifdef __cplusplus

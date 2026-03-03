@@ -48,7 +48,6 @@ RfalRfST25R3916Class::RfalRfST25R3916Class(SPIClass *spi, int cs_pin, int int_pi
   timerStopwatchTick = 0;
   i2c_enabled = false;
   dev_i2c = NULL;
-  isr_pending = false;
   irq_handler = NULL;
 }
 
@@ -62,7 +61,6 @@ RfalRfST25R3916Class::RfalRfST25R3916Class(TwoWire *i2c, int int_pin) : dev_i2c(
   timerStopwatchTick = 0;
   i2c_enabled = true;
   dev_spi = NULL;
-  isr_pending = false;
   irq_handler = NULL;
 }
 
@@ -73,6 +71,12 @@ ReturnCode RfalRfST25R3916Class::rfalInitialize(void)
 
   pinMode(cs_pin, OUTPUT);
   digitalWrite(cs_pin, HIGH);
+
+  // 创建二值信号量
+  isr_semaphore = xSemaphoreCreateBinary();
+
+  // 创建处理任务
+  xTaskCreate(st25r3916CheckInterruptTask, "st25r3916_check_interrupt_task", 4 * 1024, this, 10, NULL);
 
   pinMode(int_pin, INPUT);
   Callback<void()>::func = std::bind(&RfalRfST25R3916Class::st25r3916Isr, this);

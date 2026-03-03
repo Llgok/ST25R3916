@@ -79,18 +79,12 @@ void RfalRfST25R3916Class::st25r3916InitInterrupts(void)
 /*******************************************************************************/
 void RfalRfST25R3916Class::st25r3916Isr(void)
 {
-    if(bus_busy_flag == false)
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xSemaphoreGiveFromISR(isr_semaphore, &xHigherPriorityTaskWoken);
+    
+    if (xHigherPriorityTaskWoken) 
     {
-        st25r3916CheckForReceivedInterrupts();
-
-        // Check if callback is set and run it
-        if (NULL != st25r3916interrupt.callback) {
-            st25r3916interrupt.callback();
-        }
-    }
-    else
-    {
-        isr_pending = true;
+        portYIELD_FROM_ISR();
     }
 }
 
@@ -117,6 +111,34 @@ void RfalRfST25R3916Class::st25r3916CheckForReceivedInterrupts(void)
 
   /* Forward all interrupts, even masked ones to application */
   st25r3916interrupt.status |= irqStatus;
+}
+
+void RfalRfST25R3916Class::st25r3916CheckInterruptTask(void* arg) 
+{
+    RfalRfST25R3916Class* self = static_cast<RfalRfST25R3916Class*>(arg);
+
+    if (self) 
+    {
+        self->st25r3916CheckInterrupt();
+    }
+}
+
+void RfalRfST25R3916Class::st25r3916CheckInterrupt(void) 
+{
+    while (1) 
+    {
+        // 等待信号量
+        if (xSemaphoreTake(isr_semaphore, portMAX_DELAY)) 
+        {
+            // 处理中断
+            this->st25r3916CheckForReceivedInterrupts();
+            
+            if (NULL != this->st25r3916interrupt.callback)
+            {
+                this->st25r3916interrupt.callback();
+            }
+        }
+    }
 }
 
 
